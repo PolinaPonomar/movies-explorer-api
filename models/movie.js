@@ -10,11 +10,11 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   duration: {
-    type: Number,
+    type: Number, // почему число? есть дата но нет времени
     required: true,
   },
   year: {
-    type: String,
+    type: String, // почему строка?
     required: true,
   },
   description: {
