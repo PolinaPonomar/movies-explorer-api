@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { usersRouter } = require('./routes/users');
 const { moviesRouter } = require('./routes/movies');
+const centralizedErrorHandling = require('./middlewares/centralizedErrorHandling');
 
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
@@ -27,6 +28,9 @@ app.use((req, res, next) => {
 });
 app.use('/users', usersRouter);
 app.use('/movies', moviesRouter);
+
+// централизованная обработка ошибок
+app.use(centralizedErrorHandling);
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
