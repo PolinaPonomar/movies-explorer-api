@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const auth = require('./middlewares/auth');
 const { usersRouter } = require('./routes/users');
 const { moviesRouter } = require('./routes/movies');
 const centralizedErrorHandling = require('./middlewares/centralizedErrorHandling');
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 
   next();
 });
+app.use(auth);
 app.use('/users', usersRouter);
 app.use('/movies', moviesRouter);
 
