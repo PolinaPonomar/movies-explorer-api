@@ -15,7 +15,6 @@ module.exports = (req, res, next) => {
   } catch (e) {
     return res.status(401).send({ message: 'Токен не прошел проверку' });
   }
-  console.log(payload);
   req.user = payload; // записываем пейлоуд в объект запроса
   return next(); // пропускаем запрос дальше
 };
