@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -10,11 +11,11 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   duration: {
-    type: Number, // почему число? есть дата но нет времени
+    type: Number,
     required: true,
   },
   year: {
-    type: String, // почему строка?
+    type: String,
     required: true,
   },
   description: {
@@ -24,17 +25,26 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    // Запишите её URL-адресом дефолт?
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: '{VALUE} - невалидная  ссылка',
+    },
   },
   trailer: {
     type: String,
     required: true,
-    // Запишите её URL-адресом
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: '{VALUE} - невалидная  ссылка',
+    },
   },
   thumbnail: {
     type: String,
     required: true,
-    // Запишите её URL-адресом
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: '{VALUE} - невалидная  ссылка',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +52,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: String, // ? содержится в ответе сервиса MoviesExplorer
+    type: String,
     required: true,
   },
   nameRU: {

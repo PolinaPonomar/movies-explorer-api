@@ -20,13 +20,13 @@ const registerUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       } else if (err.name === 'MongoError' && err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        throw new ConflictError('Пользователь с переданным email уже существует');
+        next(new ConflictError('Пользователь с переданным email уже существует'));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 const login = (req, res, next) => {
@@ -38,7 +38,7 @@ const login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      return res.send({ token });
     })
     .catch((err) => {
       throw new UnauthorizedError(err.message);
@@ -48,23 +48,18 @@ const login = (req, res, next) => {
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => {
-      if (user) {
-        res.send(user);
-      } else {
-        throw new NotFoundError('Пользователь с указанным _id не найден');
-      }
-    })
+    .orFail(() => new NotFoundError('Пользователь с указанным _id не найден'))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Некорректный _id пользователя');
+        next(new BadRequestError('Некорректный _id пользователя'));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
-const updateCurrentUser = (req, res, next) => { // пароль нельзя менять?
+const updateCurrentUser = (req, res, next) => {
   const update = {}; // объект, в который запишутся только те поля, которые хочет обновить юзер
   const { name, email } = req.body;
   if (name !== undefined) { update.name = name; }
@@ -77,22 +72,17 @@ const updateCurrentUser = (req, res, next) => { // пароль нельзя м�
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (user) {
-        res.send(user);
-      } else {
-        throw new NotFoundError('Пользователь с указанным _id не найден');
-      }
-    })
+    .orFail(() => new NotFoundError('Пользователь с указанным _id не найден'))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении профиля');
+        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       } else if (err.name === 'CastError') {
-        throw new BadRequestError('Некорректный _id пользователя');
+        next(new BadRequestError('Некорректный _id пользователя'));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

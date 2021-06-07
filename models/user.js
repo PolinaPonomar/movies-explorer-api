@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    select: false, // по умолчанию  база данных не возвращает это поле
+    select: false, // по умолчанию база данных не будет возвращать это поле
   },
   name: {
     type: String,
@@ -27,8 +27,7 @@ const userSchema = new mongoose.Schema({
   versionKey: false, // избавляемся от поля "__v" в схеме
 });
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
