@@ -1,5 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
 const limiter = require('./middlewares/limiter');
@@ -17,8 +19,9 @@ mongoose.connect(MONGO_URL, {
   useFindAndModify: false,
 });
 
+app.use(cors());
 app.use(requestLogger); // логгер запросов
-app.use(limiter);
+app.use(limiter); // защита от DoS-атак
 app.use(helmet()); // простановкa security-заголовков
 app.use(express.json()); // парсинг данных
 app.use(router);
@@ -26,7 +29,4 @@ app.use(errorLogger); //  логгер ошибок
 app.use(errors()); // обработчик ошибок celebrate
 app.use(centralizedErrorHandling); // централизованная обработка ошибок
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);

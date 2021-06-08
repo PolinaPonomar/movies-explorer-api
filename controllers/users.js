@@ -5,6 +5,7 @@ const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const NotFoundError = require('../errors/not-found-err');
+const { errorMessages } = require('../utils/constants');
 
 const SOLT_ROUNDS = 10;
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
@@ -20,9 +21,9 @@ const registerUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+        next(new BadRequestError(errorMessages.BadRequestBody));
       } else if (err.name === 'MongoError' && err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        next(new ConflictError('Пользователь с переданным email уже существует'));
+        next(new ConflictError(errorMessages.ConflictEmail));
       } else {
         next(err);
       }
@@ -48,11 +49,11 @@ const login = (req, res, next) => {
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => new NotFoundError('Пользователь с указанным _id не найден'))
+    .orFail(() => new NotFoundError(errorMessages.NotFoundUser))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный _id пользователя'));
+        next(new BadRequestError(errorMessages.BadRequestId));
       } else {
         next(err);
       }
@@ -72,13 +73,13 @@ const updateCurrentUser = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => new NotFoundError('Пользователь с указанным _id не найден'))
+    .orFail(() => new NotFoundError(errorMessages.NotFoundUser))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        next(new BadRequestError(errorMessages.BadRequestBody));
       } else if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный _id пользователя'));
+        next(new BadRequestError(errorMessages.BadRequestId));
       } else {
         next(err);
       }
