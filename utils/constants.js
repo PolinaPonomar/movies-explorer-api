@@ -10,6 +10,7 @@ const errorMessages = {
   noAuthorizationHeader: 'Необходима авторизация',
   wrongToken: 'Токен не прошел проверку',
   internalServerError: 'На сервере произошла ошибка',
+  invalidLinkInMovieSchema: '{VALUE} - невалидная  ссылка',
 };
 
 const answerMessages = {

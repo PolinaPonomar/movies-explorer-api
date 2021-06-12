@@ -49,7 +49,7 @@ const validateMovieBody = celebrate({
       }
       return helpers.message('Поле "thumbnail" должно быть валидным url-адресом');
     }),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
