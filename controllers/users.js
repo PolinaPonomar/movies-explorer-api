@@ -80,6 +80,8 @@ const updateCurrentUser = (req, res, next) => {
         next(new BadRequestError(errorMessages.BadRequestBody));
       } else if (err.name === 'CastError') {
         next(new BadRequestError(errorMessages.BadRequestId));
+      } else if (err.name === 'MongoError' && err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        next(new ConflictError(errorMessages.ConflictEmail));
       } else {
         next(err);
       }
